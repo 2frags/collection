@@ -494,7 +494,12 @@ class BaseController
         if(!isset($params['parent'])){
             $params['parent'] = $this->parent;
         }
-
+	 if(!isset($params['pagetitle'])){
+            $params['pagetitle'] = 'pagetitle empty';
+        }
+        if(!isset($params['publishedon']) || $params['publishedon'] <= 0  || $params['publishedon'] == '0' ){
+            $params['publishedon'] = time();
+        }
         return $params;
     }
 
