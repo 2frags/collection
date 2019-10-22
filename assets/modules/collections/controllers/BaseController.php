@@ -355,6 +355,9 @@ class BaseController
         $res['statusImage'] = '';
 
         foreach ($this->fields as $fieldName => $fieldData) {
+	    if($fieldData['type'] == 'date') {				
+		$res[$fieldName] = date('d.m.Y', $res[$fieldName]);
+	    }
             if(!empty($fieldData['type']) && in_array($fieldData['type'],['thumb','image'])){
                 $src = !empty($res[$fieldName])?$res[$fieldName]:'';
 
@@ -448,8 +451,21 @@ class BaseController
                     $doc->create($this->getNewDocParams());
                 }
                 $doc->fromArray($req);
+			if(empty($doc->get('pagetitle'))){
+                    $doc->set('pagetitle','pagetitle empty');
+                }
+                if($pagetitle == 'pagetitle empty'){
+                    $doc->set('alias','');
+                }				
+		if(!isset($publishedon) || $publishedon <= 0 ){
+    			$doc->set('publishedon',time());
+		}
+		if(strpos($doc->get('alias'), 'pagetitle') !== false){					
+			$str = str_replace(' ', '_', $pagetitle);
+			$transAlias = strtolower(transliterator_transliterate('Ukrainian-Latin/BGN', $str));
+			$doc->set('alias',$transAlias);
+		}
                 $result = $doc->save(true, false);
-
 
                 if ($result) {
                     $outData = array(
